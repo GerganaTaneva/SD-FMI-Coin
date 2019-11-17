@@ -6,6 +6,7 @@ Wallet::Wallet() : owner(NULL), fiatMoney(0.0)
 
 Wallet::Wallet(const double fiatMoney, const char* owner)
 {
+	this->id = generateId();
 	setFiatMoney(fiatMoney);
 	setOwner(owner);
 }

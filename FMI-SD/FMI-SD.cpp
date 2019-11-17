@@ -3,12 +3,13 @@
 #include "Wallet.h"
 #include "Transaction.h"
 #include "DynamicArr.h"
+#include "Order.h"
 
 using namespace std;
 
 DynamicArr<Wallet> wallets;
 DynamicArr<Transaction> transactions;
-//DynamicArr<Order> orders;
+DynamicArr<Order> orders;
 
 void createWallet(const double fiatMoney, const char* name)
 {
@@ -16,26 +17,29 @@ void createWallet(const double fiatMoney, const char* name)
 	Transaction initialTrans(ULONG_MAX - 1, wallet.getID(), fiatMoney/375);
 	wallets.add(wallet);
 	transactions.add(initialTrans);
-
-	//ofstream os("wallets.dat", ios::app);
-	//size_t ownerLen = strlen(name);
-	////char* owner = new char[ownerLen + 1];
-	//char owner[] = { 'g', 'e', 'r', 'i' };
-	//if (os.is_open())
-	//{
-	//	unsigned id = 123435;
-	//	//strcpy_s(owner, sizeof(name), name);
-	//	os.write((char*)&ownerLen, sizeof(ownerLen));
-	//	os.write((char*)&owner, ownerLen);
-	//	//delete[] owner;
-
-	//	os.write((char*)&fiatMoney, sizeof(fiatMoney));
-	//	os.write((char*)&id, sizeof(id));
-	//	//os << ownerLen << "GERI" << id << fiatMoney << endl;
-	//}
-	//os.close();
 }
 
+void quit()
+{
+	ofstream os("wallets.dat", ios::app);
+	for (int i = 0; i < wallets.getSize(); i++)
+	{
+		size_t ownerLen = strlen(wallets[i].getOwner());
+		char* owner = new char[ownerLen + 1];
+		if (os.is_open())
+		{
+			double fiatMoney = wallets[i].getFiatMoney();
+			unsigned id = wallets[i].getID();
+			strcpy_s(owner, sizeof(wallets[i].getOwner()), wallets[i].getOwner());
+			os.write((char*)&ownerLen, sizeof(ownerLen));
+			os.write((char*)&owner, ownerLen);
+			delete[] owner;
+			os.write((char*)&fiatMoney, sizeof(fiatMoney));
+			os.write((char*)&id, sizeof(id));
+		}
+	}
+	os.close();
+}
 
 
 void readBinary()
@@ -56,18 +60,33 @@ void readBinary()
 	delete[] owner;
 }
 
+void walletInfo(unsigned walletId)
+{
+	double fmiCoins = 0.0;
+	for (int i = 0; i < transactions.getSize(); i++)
+	{
+		if (transactions[i].getReceiverId() == walletId)
+		{
+			fmiCoins += transactions[i].getFmiCoins();
+		}
+	}
+
+	for (int i = 0; i < wallets.getSize(); i++)
+	{
+		if (wallets[i].getID() == walletId)
+		{
+			cout << "Wallet with owner " << wallets[i].getOwner() << " has " << wallets[i].getFiatMoney();
+			cout << " money and " << fmiCoins << " FMI coins" << endl;
+		}
+	}
+}
+
 int main()
 {
 	srand(time(NULL));
-	/*for (int i = 0; i < 10; i++) 
-	{
-		Wallet wallet;
-		cout << time << endl;
-	}*/
 
 	createWallet(12.5, "GERI");
-
+	walletInfo(123435);
 	//readBinary();
-
-	
 }
+	

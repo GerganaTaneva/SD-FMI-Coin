@@ -94,7 +94,7 @@ public:
 	}
 
 	
-	template<class T>
+	/*template<class T>
 	friend std::ostream& operator<<(std::ostream& os, const DynamicArr<T>& arr)
 	{
 		int n = arr.getSize();
@@ -104,7 +104,7 @@ public:
 		}
 		os << std::endl;
 		return os;
-	}
+	}*/
 
 private:
 	void copy(const T& other)
